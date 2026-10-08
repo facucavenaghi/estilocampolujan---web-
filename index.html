@@ -1205,6 +1205,24 @@ function showHome(){
   window.scrollTo(0,0);
 }
 
+// Links a "Nosotros" y "Contacto": funcionan tambien desde el catalogo
+// (vuelven a la home y despues bajan a la seccion)
+document.addEventListener('click', function(e){
+  const a = e.target.closest('a[href="#nosotros"], a[href="#contacto"]');
+  if(!a) return;
+  const target = document.getElementById(a.getAttribute('href').slice(1));
+  if(!target) return;
+  e.preventDefault();
+  if(document.getElementById('catalogoPage').classList.contains('active')) showHome();
+  setTimeout(() => target.scrollIntoView({behavior:'smooth', block:'start'}), 0);
+});
+
+// Año del footer siempre actualizado
+document.addEventListener('DOMContentLoaded', function(){
+  const y = document.getElementById('footerYear');
+  if(y) y.textContent = new Date().getFullYear();
+});
+
 function showCatalogo(cat){
   document.getElementById('homePage').style.display='none';
   document.getElementById('catalogoPage').classList.add('active');
@@ -1696,7 +1714,7 @@ function shareCat(cat, btn){
   </section>
 
 
-  <footer class="site-footer">
+  <footer class="site-footer" id="contacto">
     <div class="footer-grid">
       <div class="footer-col">
         <h4>Estilo Campo Luján</h4>
@@ -1722,7 +1740,7 @@ function shareCat(cat, btn){
     </div>
     <div class="footer-bottom">
       <div class="footer-logo">Estilo Campo <span>Luján</span></div>
-      <span class="footer-copy">© 2025 Estilo Campo Luján · Todos los derechos reservados</span>
+      <span class="footer-copy">© <span id="footerYear">2026</span> Estilo Campo Luján · Todos los derechos reservados</span>
       <div class="footer-social">
         <a class="footer-soc-btn" href="https://instagram.com/estilocampolujan" target="_blank" rel="noopener" aria-label="Instagram"><svg class="ig-ico" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg></a>
         <a class="footer-soc-btn" href="https://wa.me/5492323467473" target="_blank"><span class="wpp-mask" aria-hidden="true"></span></a>
