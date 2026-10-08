@@ -1113,7 +1113,7 @@ function buildCatalogo(){
   const navInner = document.getElementById('catNavInner');
   const sections = document.getElementById('catSections');
   navInner.innerHTML = catOrder().map((cat,i) =>
-    `<button class="cat-nav-btn${i===0?' active':''}" onclick="switchCat('${cat}')" data-cat="${cat}">${cat}</button>`
+    `<button class="cat-nav-btn${i===0?' active':''}" onclick="switchCat('${cat}')" data-cat="${cat}">${CAT_LABELS[cat] || cat}</button>`
   ).join('');
 
   sections.innerHTML = Object.entries(PRODUCTOS).map(([cat, prods], i) => {
