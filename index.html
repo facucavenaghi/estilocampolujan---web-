@@ -10,11 +10,12 @@
 <meta property="og:title" content="Estilo Campo Luján – Muebles de Pino Artesanales">
 <meta property="og:description" content="Muebles de pino macizo artesanales en Luján. Más de 150 modelos de madera maciza: diseño campo, fabricación a medida y envíos. Consultá por WhatsApp.">
 <meta property="og:url" content="https://estilocampolujan.com.ar/">
-<meta property="og:image" content="https://estilocampolujan.com.ar/fotos/inicio-1.jpg">
+<meta property="og:image" content="https://estilocampolujan.com.ar/fotos/inicio-1-desk.jpg">
 <meta property="og:locale" content="es_AR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://estilocampolujan.com.ar/fotos/inicio-1.jpg">
-<link rel="preload" as="image" href="fotos/inicio-1.jpg" fetchpriority="high">
+<meta name="twitter:image" content="https://estilocampolujan.com.ar/fotos/inicio-1-desk.jpg">
+<link rel="preload" as="image" href="fotos/inicio-1.jpg" fetchpriority="high" media="not all and (min-width: 900px) and (orientation: landscape)">
+<link rel="preload" as="image" href="fotos/inicio-1-desk.jpg" fetchpriority="high" media="(min-width: 900px) and (orientation: landscape)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <meta name="theme-color" content="#F7F3EC">
@@ -421,7 +422,12 @@ nav.nav-top .nav-cta{background:rgba(255,255,255,.14);border:1px solid rgba(255,
 /* ---------- HERO ---------- */
 .hero-v2{height:100vh;height:100svh;min-height:580px;max-height:980px;align-items:flex-end;justify-content:flex-start}
 .hero-v2-slide{transition:opacity 1.4s var(--ease);transform:none}
-.hero-v2-slide.active{animation:ecKenBurns 9s var(--ease) both}
+/* Sin zoom: escalar la foto la hace ver borrosa */
+.hero-v2-slide.active{animation:none}
+/* Pantallas horizontales: version apaisada de la primera foto (pisa el style inline) */
+@media (min-width:900px) and (orientation:landscape){
+  #heroSlide0{background-image:url('fotos/inicio-1-desk.jpg') !important;background-position:center 30%}
+}
 .hero-v2-overlay{background:linear-gradient(180deg,rgba(25,17,10,.45) 0%,rgba(25,17,10,.05) 28%,rgba(25,17,10,.15) 50%,rgba(25,17,10,.78) 100%)}
 .hero-v2-content{text-align:left;max-width:760px;padding:0 5% 92px;margin:0}
 .hero-v2-content .hero-badge{background:none;border:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:0;border-radius:0;font-size:10.5px;letter-spacing:3px;color:rgba(255,255,255,.85);margin-bottom:18px;display:inline-flex;align-items:center;gap:12px}
@@ -978,7 +984,9 @@ function buildHome(){
   if(s0 && FOTOS['inicio_1']) s0.style.backgroundImage = "url('" + FOTOS['inicio_1'] + "')";
   // 2a foto del hero: se pide recien despues del load (no compite con la carga inicial)
   if(s1 && FOTOS['inicio_2']){
-    const setS1 = () => { s1.style.backgroundImage = "url('" + FOTOS['inicio_2'] + "')"; };
+    // En pantallas horizontales usa la version apaisada (misma regla que #heroSlide0 en el CSS)
+    const wide = window.matchMedia('(min-width: 900px) and (orientation: landscape)').matches;
+    const setS1 = () => { s1.style.backgroundImage = "url('" + (wide ? 'fotos/inicio-2-desk.jpg' : FOTOS['inicio_2']) + "')"; };
     if(document.readyState === 'complete') setTimeout(setS1, 1500); else window.addEventListener('load', () => setTimeout(setS1, 1500), {once:true});
   }
   const nosImg = document.getElementById('nosImg');
