@@ -813,6 +813,56 @@ body{font-family:var(--f-body);font-weight:400}
 /* Lightbox: la foto deja lugar para nombre, precio y botones */
 .lightbox img{max-height:min(62vh,calc(100vh - 360px))}
 @media(min-width:768px){.lightbox img{max-height:min(70vh,calc(100vh - 360px))}}
+/* =====================================================================
+   NAVEGACION DE CATEGORIAS: barra + "Todas" (< 1024) / sidebar (>= 1024)
+   ===================================================================== */
+.cat-nav{display:flex;align-items:center;overflow:hidden;-webkit-mask-image:none;mask-image:none}
+.cat-all{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;height:36px;margin-left:5%;padding:0 15px 0 13px;border-radius:999px;border:1px solid transparent;background:var(--sand);color:var(--dark);font-family:var(--f-sans);font-weight:500;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity .2s;-webkit-tap-highlight-color:transparent}
+.cat-all:active{opacity:.7}
+.cat-nav-inner{flex:1;min-width:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:10px 5% 10px 8px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 28px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 28px),transparent 100%)}
+.cat-nav-inner::-webkit-scrollbar{display:none}
+.cat-side{display:none}
+
+/* lista agrupada (sidebar y hoja) */
+.cs-group{margin-bottom:22px}
+.cs-group:last-child{margin-bottom:0}
+.cs-title{font-family:var(--f-sans);font-weight:500;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 6px 14px}
+.cs-item{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:7px 4px 7px 14px;border:none;background:none;font-family:var(--f-sans);font-weight:400;font-size:14px;line-height:1.3;color:#6A5A4C;text-align:left;cursor:pointer;transition:color .2s;-webkit-tap-highlight-color:transparent}
+.cs-item::before{content:'';position:absolute;left:0;top:50%;width:2px;height:16px;margin-top:-8px;border-radius:2px;background:var(--accent);opacity:0;transform:scaleY(.3);transition:opacity .25s,transform .25s var(--ease)}
+.cs-item:hover{color:var(--dark)}
+.cs-item.active{color:var(--dark);font-weight:500}
+.cs-item.active::before{opacity:1;transform:none}
+.cs-n{flex-shrink:0;font-size:11px;font-weight:400;color:var(--muted);opacity:.8;font-variant-numeric:tabular-nums}
+.cs-item:focus-visible,.cat-all:focus-visible,.sheet-close:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* hoja "Todas" (bottom sheet) */
+.cat-sheet-overlay{position:fixed;inset:0;z-index:940;background:rgba(20,14,9,.45);opacity:0;pointer-events:none;transition:opacity .3s ease}
+.cat-sheet{position:fixed;left:0;right:0;bottom:0;z-index:950;max-height:80vh;display:flex;flex-direction:column;background:var(--cream);border-radius:var(--radius) var(--radius) 0 0;box-shadow:0 -12px 40px rgba(20,14,9,.18);transform:translateY(100%);visibility:hidden;transition:transform .38s var(--ease),visibility 0s linear .38s}
+body.sheet-open .cat-sheet{transform:none;visibility:visible;transition:transform .38s var(--ease),visibility 0s}
+body.sheet-open .cat-sheet-overlay{opacity:1;pointer-events:auto}
+body.sheet-open .wpp-float,body.sheet-open .ig-float{opacity:0;pointer-events:none}
+.sheet-grab{width:36px;height:4px;border-radius:2px;background:rgba(51,38,26,.18);margin:8px auto 0;flex-shrink:0}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 10px 20px;border-bottom:1px solid var(--line);flex-shrink:0}
+.sheet-title{font-family:var(--f-sans);font-weight:400;font-size:17px;letter-spacing:.015em;color:var(--dark)}
+.sheet-close{width:44px;height:44px;border:none;background:none;font-size:19px;color:var(--muted);cursor:pointer;border-radius:50%}
+.sheet-body{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:18px 20px calc(24px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 16px;align-items:start}
+.sheet-body .cs-group{margin:0}
+.sheet-body .cs-title{margin-left:10px}
+.sheet-body .cs-item{padding:9px 2px 9px 10px;font-size:13.5px}
+@media(min-width:600px){.sheet-body{padding-left:28px;padding-right:28px;gap:26px 28px}}
+
+/* compu: dos columnas */
+@media(min-width:1024px){
+  .catalogo-page.active{display:grid;grid-template-columns:232px minmax(0,1fr);column-gap:44px;padding-left:4%;padding-right:4%;align-items:start}
+  .cat-nav{display:none}
+  .cat-side{display:block;grid-column:1;position:sticky;top:var(--nav-h);max-height:calc(100vh - var(--nav-h));overflow-y:auto;overscroll-behavior:contain;padding:40px 6px 32px 0;scrollbar-width:thin;scrollbar-color:rgba(51,38,26,.18) transparent}
+  .cat-side::-webkit-scrollbar{width:4px}
+  .cat-side::-webkit-scrollbar-thumb{background:rgba(51,38,26,.18);border-radius:4px}
+  #catSections{grid-column:2;min-width:0}
+  #catSections .cat-section{padding:36px 0 90px}
+  .cat-sheet,.cat-sheet-overlay{display:none}
+}
+
 </style>
 
 <!-- Meta Pixel Code -->
@@ -937,7 +987,8 @@ src="https://www.facebook.com/tr?id=1554310162857594&ev=PageView&noscript=1"
 </div>
 
 <div class="catalogo-page" id="catalogoPage">
-  <div class="cat-nav"><div class="cat-nav-inner" id="catNavInner"></div></div>
+  <div class="cat-nav"><button type="button" class="cat-all" id="catAll" aria-haspopup="dialog" aria-controls="catSheet" aria-expanded="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span>Todas</span></button><div class="cat-nav-inner" id="catNavInner"></div></div>
+  <aside class="cat-side" id="catSide"></aside>
   <div id="catSections"></div>
 </div>
 
@@ -964,6 +1015,26 @@ const PRODUCTOS = {"Mesas": [["Mesa maciza 2x1", "2 x 1 m", 750000], ["Mesa ench
 
 
 const CAT_ICONS = {"Mesas":"🪑","Sillas":"🪑","Banquetas":"🪑","Modulares":"🗄️","Islas de cocina":"🍳","Racks TV":"📺","Bahiuts":"🗄️","Sillones":"🛋️","Mesas ratonas":"☕","Bibliotecas":"📚","Recibidores":"🚪","Cristaleros y vitrinas":"🥂","Despenseros":"🥫","Organizadores":"📦","Roperos y vestidores":"👗","Dormitorio":"🛏️","Escritorios":"✏️","Espejos y percheros":"🪞","Zapateros":"👟","Sección Yute":"🧶","Sección Mimbre":"🌿","Jugueteros":"🧸"};
+
+// Agrupacion por ambiente para la navegacion del catalogo (sidebar, hoja "Todas" y orden de pastillas).
+// Solo define el ORDEN visual: no cambia PRODUCTOS. Lo que no este en ningun grupo cae en "Otros".
+const CAT_GROUPS = [
+  {g:'Comedor', cats:['Mesas','Sillas','Banquetas','Bahiuts','Cristaleros y vitrinas']},
+  {g:'Cocina', cats:['Islas de cocina','Despenseros','Modulares']},
+  {g:'Living', cats:['Racks TV','Sillones','Mesas ratonas','Bibliotecas','Recibidores']},
+  {g:'Dormitorio', cats:['Dormitorio','Roperos y vestidores','Zapateros','Jugueteros']},
+  {g:'Oficina y organización', cats:['Escritorios','Organizadores','Espejos y percheros']},
+  {g:'Mimbre y yute', cats:['Sección Yute','Sección Mimbre']}
+];
+const CAT_LABELS = {'Sección Yute':'Yute', 'Sección Mimbre':'Mimbre'};   // solo texto visible; la clave no cambia
+function catGroups(){
+  const seen = new Set();
+  const out = CAT_GROUPS.map(gr => ({g: gr.g, cats: gr.cats.filter(c => PRODUCTOS[c] && !seen.has(c) && seen.add(c))})).filter(gr => gr.cats.length);
+  const rest = Object.keys(PRODUCTOS).filter(c => !seen.has(c));
+  if(rest.length) out.push({g:'Otros', cats: rest});
+  return out;
+}
+function catOrder(){ return catGroups().flatMap(gr => gr.cats); }
 
 function fmt(n){return n>0?'$'+n.toLocaleString('es-AR'):'Consultar';}
 
@@ -1041,7 +1112,7 @@ function buildHome(){
 function buildCatalogo(){
   const navInner = document.getElementById('catNavInner');
   const sections = document.getElementById('catSections');
-  navInner.innerHTML = Object.keys(PRODUCTOS).map((cat,i) =>
+  navInner.innerHTML = catOrder().map((cat,i) =>
     `<button class="cat-nav-btn${i===0?' active':''}" onclick="switchCat('${cat}')" data-cat="${cat}">${cat}</button>`
   ).join('');
 
@@ -1231,13 +1302,18 @@ function showCatalogo(cat){
 }
 
 function switchCat(cat){
-  document.querySelectorAll('.cat-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
+  document.querySelectorAll('.cat-nav-btn,.cs-item').forEach(b=>b.classList.toggle('active',b.dataset.cat===cat));
   document.querySelectorAll('.cat-section').forEach(s=>s.classList.remove('active'));
   const sec = document.getElementById('cat-'+cat.replace(/[^a-zA-Z]/g,'_'));
   if(sec) sec.classList.add('active');
   // scroll tab into view
   const btn = document.querySelector(`.cat-nav-btn[data-cat="${cat}"]`);
-  if(btn) btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  // centra la pastilla moviendo solo la barra (no la ventana, asi no se cancela con otros scrolls suaves)
+  const bar = btn && btn.parentElement;
+  if(bar && bar.clientWidth){
+    const br = btn.getBoundingClientRect(), pr = bar.getBoundingClientRect();
+    bar.scrollTo({left: Math.max(0, bar.scrollLeft + (br.left - pr.left) - (bar.clientWidth - br.width) / 2), behavior:'smooth'});
+  }
   // reflejar la sección actual en la URL para poder compartirla (#mesas, #sillas, ...)
   if(typeof catToSlug === 'function'
      && document.getElementById('catalogoPage').classList.contains('active')
@@ -2019,6 +2095,119 @@ document.addEventListener('click', function(e){
   load();
   if(cart.length) save();   // limpia del storage los nombres que ya no existen
   updateCount(false);
+})();
+</script>
+
+<!-- NAVEGACION DE CATEGORIAS: sidebar (compu) + hoja "Todas" (celular) -->
+<script>
+(function(){
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var desk = window.matchMedia('(min-width:1024px)');
+  var side = document.getElementById('catSide'), allBtn = document.getElementById('catAll');
+  if(!side || typeof catGroups !== 'function') return;
+
+  function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+  function listHTML(){
+    return catGroups().map(function(gr){
+      return '<div class="cs-group"><div class="cs-title">' + esc(gr.g) + '</div>' + gr.cats.map(function(c){
+        return '<button type="button" class="cs-item" data-cat="' + esc(c) + '"><span class="cs-name">' + esc(CAT_LABELS[c] || c) + '</span><span class="cs-n">' + PRODUCTOS[c].length + '</span></button>';
+      }).join('') + '</div>';
+    }).join('');
+  }
+  function markActive(){
+    var cur = document.querySelector('.cat-nav-btn.active'), c = cur && cur.dataset.cat;
+    var items = document.querySelectorAll('.cs-item');
+    for(var i = 0; i < items.length; i++) items[i].classList.toggle('active', items[i].dataset.cat === c);
+  }
+
+  // Sube al principio de la grilla si estas mas abajo (o siempre, con force)
+  window.catScrollTop = function(force){
+    var secs = document.getElementById('catSections'); if(!secs) return;
+    var navEl = document.getElementById('siteNav');
+    var bar = desk.matches ? 0 : (document.querySelector('.cat-nav') || {offsetHeight:0}).offsetHeight;
+    var y = Math.max(0, secs.getBoundingClientRect().top + window.pageYOffset - (navEl ? navEl.offsetHeight : 54) - bar);
+    if(force || window.pageYOffset > y + 2) window.scrollTo({top: y, behavior: RM ? 'auto' : 'smooth'});
+  };
+
+  // Re-centrar la pastilla activa cuando cargan las fuentes (cambian los anchos)
+  function recenter(){
+    var btn = document.querySelector('.cat-nav-btn.active'), bar = btn && btn.parentElement;
+    if(!bar || !bar.clientWidth) return;
+    var br = btn.getBoundingClientRect(), pr = bar.getBoundingClientRect();
+    bar.scrollLeft = Math.max(0, bar.scrollLeft + (br.left - pr.left) - (bar.clientWidth - br.width) / 2);
+  }
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(recenter);
+
+  // ---- Sidebar (se genera una sola vez) ----
+  side.innerHTML = '<div role="navigation" aria-label="Categorías">' + listHTML() + '</div>';
+  markActive();
+  side.addEventListener('click', function(e){
+    var b = e.target.closest('.cs-item'); if(!b) return;
+    switchCat(b.dataset.cat);
+    catScrollTop(false);
+  });
+
+  // ---- Hoja "Todas" (se genera al primer uso) ----
+  var sheet = null, overlay = null, open = false, pending = null, lastFocus = null;
+  function build(){
+    overlay = document.createElement('div'); overlay.className = 'cat-sheet-overlay';
+    sheet = document.createElement('div'); sheet.className = 'cat-sheet'; sheet.id = 'catSheet';
+    sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-modal', 'true'); sheet.setAttribute('aria-labelledby', 'catSheetTitle'); sheet.setAttribute('aria-hidden', 'true');
+    sheet.innerHTML = '<div class="sheet-grab" aria-hidden="true"></div>' +
+      '<div class="sheet-head"><h2 class="sheet-title" id="catSheetTitle">Categorías</h2>' +
+      '<button type="button" class="sheet-close" aria-label="Cerrar categorías">&#10005;</button></div>' +
+      '<div class="sheet-body">' + listHTML() + '</div>';
+    document.body.appendChild(overlay); document.body.appendChild(sheet);
+    overlay.addEventListener('click', function(){ close(null); });
+    sheet.addEventListener('click', function(e){
+      if(e.target.closest('.sheet-close')) return close(null);
+      var b = e.target.closest('.cs-item'); if(b) close(b.dataset.cat);
+    });
+    sheet.offsetHeight;   // fuerza layout para que la primera apertura anime
+  }
+  function openSheet(){
+    if(open) return;
+    if(!sheet) build();
+    markActive();
+    open = true; lastFocus = document.activeElement;
+    document.body.classList.add('sheet-open');
+    document.body.style.overflow = 'hidden';
+    sheet.setAttribute('aria-hidden', 'false'); allBtn.setAttribute('aria-expanded', 'true');
+    try{ history.pushState({ecSheet: true}, '', location.href); }catch(e){}   // el boton atras cierra la hoja
+    setTimeout(function(){ var c = sheet.querySelector('.sheet-close'); if(c) c.focus({preventScroll: true}); }, 60);
+  }
+  function finish(){
+    if(!open) return;
+    open = false;
+    document.body.classList.remove('sheet-open');
+    document.body.style.overflow = '';
+    sheet.setAttribute('aria-hidden', 'true'); allBtn.setAttribute('aria-expanded', 'false');
+    if(pending){ var c = pending; pending = null; switchCat(c); catScrollTop(true); }
+    if(lastFocus && lastFocus.focus) lastFocus.focus({preventScroll: true});
+  }
+  function close(cat){
+    if(!open) return;
+    pending = cat || null;
+    if(history.state && history.state.ecSheet){
+      history.back();                                  // popstate -> finish()
+      setTimeout(function(){ if(open) finish(); }, 450);  // respaldo
+    } else finish();
+  }
+  allBtn.addEventListener('click', openSheet);
+  window.addEventListener('popstate', function(){ if(open) finish(); });
+  document.addEventListener('keydown', function(e){
+    if(!open) return;
+    if(e.key === 'Escape'){ e.preventDefault(); close(null); return; }
+    if(e.key === 'Tab'){
+      var f = sheet.querySelectorAll('button'); if(!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if(!sheet.contains(document.activeElement)){ e.preventDefault(); first.focus(); }
+      else if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+    }
+  });
+  var onDesk = function(){ if(desk.matches && open) close(null); };
+  if(desk.addEventListener) desk.addEventListener('change', onDesk); else if(desk.addListener) desk.addListener(onDesk);
 })();
 </script>
 
