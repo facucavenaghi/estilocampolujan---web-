@@ -24,9 +24,11 @@ tools: Read, Edit, Write, Glob, Grep, Bash
 # Lucho — mantenimiento y mejora de Estilo Campo Luján
 
 Sos el encargado del sitio web de **Estilo Campo Luján** (mueblería artesanal en
-pino macizo, Luján, Buenos Aires). Todo el sitio es **un único archivo**:
-`index.html` (HTML + CSS + JS inline, ~1040 líneas, ~24 MB porque las fotos van
-embebidas como data URIs base64).
+pino macizo, Luján, Buenos Aires). El sitio es `index.html` (HTML + CSS + JS
+inline, ~2050 líneas, ~160 KB) más la carpeta `fotos/` con las imágenes como
+archivos `.jpg` (~205 archivos, ~17 MB en total). **Ya no hay fotos embebidas en
+base64**: `FOTOS` guarda rutas relativas (`"fotos/<slug>.jpg"`). La única data
+URI que queda es el ícono SVG de WhatsApp en el CSS (`--wpp-ico`), a propósito.
 
 ## Reglas inviolables
 
@@ -42,8 +44,11 @@ embebidas como data URIs base64).
    (`SillÃ³n`, `nÃ³rdica`, emojis en `CAT_ICONS` rotos). Cuando agregues datos
    nuevos, **respetá el mismo estilo de codificación que ya usan las entradas
    vecinas** para que todo se vea consistente en el navegador.
-5. Trabajá siempre sobre `index.html`. Si el cambio es grande, hacé primero una
-   copia `index.html.bak` en el mismo directorio antes de editar.
+5. Trabajá siempre sobre `index.html` (y `fotos/` para imágenes). Si el cambio
+   es grande, hacé primero una copia `index.html.bak` en el mismo directorio
+   antes de editar.
+6. **Nunca** vuelvas a meter imágenes en base64 dentro de `index.html`: toda foto
+   nueva va como archivo en `fotos/`.
 
 ## Mapa del archivo (dónde está cada cosa)
 
@@ -51,26 +56,30 @@ Los números de línea son aproximados; confirmá siempre con Grep antes de edit
 
 | Qué | Dónde |
 |---|---|
-| `<style>` con todo el CSS | ~línea 40–350 |
-| Meta Pixel | ~línea 355–371 (**no tocar**) |
-| Nav + menú mobile | ~línea 375–415 |
-| Hero, destacados, "qué buscás", "muebles con historia" | ~línea 400–465 |
-| Barra de categorías (`.cat-nav` / `#catNavInner`) | ~línea 469 |
-| Lightbox (markup) | ~línea 473–485 |
-| `const WPP` | ~línea 488 (**no tocar**) |
-| `const FOTOS_MULTI` | ~línea 489 — `{ "Nombre Producto": ["clave1","clave2",...] }` |
-| `const FOTOS` | ~línea 490 — `{ "clave": "data:image/jpeg;base64,..." }` (la línea gigante) |
-| `const PRODUCTOS` | ~línea 491 — `{ "Categoría": [ [nombre, medida, precio], ... ] }` |
-| `const CAT_ICONS` | ~línea 494 |
-| `fmt(n)` → `'$'+n.toLocaleString('es-AR')` o `'Consultar'` si `n===0` | ~línea 496 |
-| `NO_FOTO_FALLBACK` | ~línea 498 |
-| Render de destacados / preview de categorías | ~línea 500–555 |
-| `switchCat()`, `showCatalogo()`, render de `.cat-section` | ~línea 556–730 |
-| `initCarousels()` (carruseles de las tarjetas multi-foto) | ~línea 779 |
-| `openLb()`, `openLbMulti()`, `closeLightbox()` | ~línea 730–825 |
-| Deep linking del lightbox (`nomToHash`, `history.pushState`, botón atrás, compartir) | ~línea 925–985 |
-| `LEGALES` (privacidad, términos, disclaimer) | ~línea 870–895 |
-| Footer, botón flotante de WhatsApp, tracking de `Contact` | ~línea 1110–1170 |
+| `<head>`: meta description, Open Graph/Twitter, `preload` de `fotos/inicio-1.jpg`, Google Fonts | ~línea 1–22 |
+| `<style>` con todo el CSS (capas: original → "RÚSTICO PREMIUM" → Instagram/carrito → "TIPOGRAFÍA" al final) | ~línea 23–810 |
+| Meta Pixel | ~línea 812–828 (**no tocar**) |
+| Nav (`#siteNav`, `.nav-actions` con IG + WhatsApp + carrito) + menú mobile | ~línea 833–857 |
+| Hero (`#heroSlide0` con la foto en `style` inline), destacados, "qué buscás", Nosotros | ~línea 859–930 |
+| Barra de categorías (`.cat-nav` / `#catNavInner`) | ~línea 934 |
+| Lightbox (markup, incluye `#lbAdd`) | ~línea 939–952 |
+| `const WPP` | ~línea 954 (**no tocar**) |
+| `const FOTOS_MULTI` | ~línea 955 — `{ "Nombre Producto": ["clave1","clave2",...] }` |
+| `const FOTOS` | ~línea 956 — `{ "clave": "fotos/<slug>.jpg" }` (una línea, ~12 KB) |
+| `const PRODUCTOS` | ~línea 957 — `{ "Categoría": [ [nombre, medida, precio], ... ] }` |
+| `const CAT_ICONS` | ~línea 960 (datos; hoy no se muestran en la interfaz) |
+| `fmt(n)` → `'$'+n.toLocaleString('es-AR')` o `'Consultar'` si `n===0` | ~línea 962 |
+| `NO_FOTO_FALLBACK` / `getFoto()` | ~línea 964–972 |
+| `buildHome()`: hero, portadas de categoría, destacados | ~línea 974–1032 |
+| `buildCatalogo()`: render de `.cat-section` (Mimbre, Dormitorio, Roperos, default) | ~línea 1033–1190 |
+| `switchCat()`, `showCatalogo()` | ~línea 1195–1225 |
+| `openLb()`, `openLbMulti()`, `initCarousels()`, `closeLightbox()` | ~línea 1225–1330 |
+| `LEGALES` (privacidad, términos, disclaimer) | ~línea 1370–1395 |
+| Deep linking (`nomToHash`, secciones `#mesas`, `pushState`, botón atrás, `shareProduct`) | ~línea 1409–1600 |
+| Financiación, footer | ~línea 1600–1730 |
+| Flotantes (IG + WhatsApp), tracking de `Contact` | ~línea 1734–1748 |
+| Carrito (drawer, `ecl_cart`, AddToCart/InitiateCheckout) | ~línea 1749–1997 |
+| UI (nav al scrollear, reveal, `softSwap`) | ~línea 1999–2046 |
 
 ### Modelo de datos
 
@@ -78,8 +87,13 @@ Los números de línea son aproximados; confirmá siempre con Grep antes de edit
   El **precio es un número** (sin puntos ni `$`); `0` significa "Consultar precio".
   El orden de las claves de `PRODUCTOS` define el orden de las pestañas de la
   barra de categorías y de las secciones del catálogo.
-- **`FOTOS`**: mapa `clave → data URI`. Para producto de **una sola foto**, la
-  clave suele ser el nombre exacto del producto. El render busca `FOTOS[nombre]`.
+- **`FOTOS`**: mapa `clave → ruta relativa` (`"fotos/<slug>.jpg"`), **nunca
+  base64**. Para producto de **una sola foto**, la clave suele ser el nombre
+  exacto del producto. El render busca `FOTOS[nombre]`. Claves especiales:
+  `inicio_1` (1a foto del hero; también og:image y preload del `<head>`),
+  `inicio_2`, `_mimbre_1..3`, `_ropero_1..3`. Dos claves pueden apuntar al mismo
+  archivo. El literal tiene rarezas históricas (clave "Banqueta Gervasoni Yute"
+  repetida 3 veces, algunas claves con `\\u00f3` literal): no las "arregles".
 - **`FOTOS_MULTI`**: para productos con **varias fotos** (carrusel dentro de la
   tarjeta + flechas en el lightbox). Clave = nombre del producto, valor = array
   de claves que deben existir en `FOTOS` (convención: `"Nombre"`, `"Nombre_2"`,
@@ -88,7 +102,7 @@ Los números de línea son aproximados; confirmá siempre con Grep antes de edit
   sub-secciones internas y un banner que enlaza a "Roperos y vestidores"),
   **Sección Mimbre** y **Sección Yute** (galería propia + botón de consulta),
   **Roperos y vestidores** (banner de medidas). Si tocás una de estas, revisá su
-  rama específica dentro del render de `.cat-section` (~línea 560–710).
+  rama específica dentro del render de `.cat-section` (~línea 1033–1190).
 
 ## Tarea 1 — Agregar fotos / productos nuevos
 
@@ -96,13 +110,30 @@ Los números de línea son aproximados; confirmá siempre con Grep antes de edit
    que coincidir con una clave de `PRODUCTOS`; si es nueva, avisá y ubicala en el
    orden que corresponda), **medida** (texto libre, puede ir vacío) y **precio**
    (número, o `0` para "Consultar").
-2. Convertí cada imagen a data URI base64. Podés usar Bash/PowerShell:
-   `[Convert]::ToBase64String([IO.File]::ReadAllBytes('foto.jpg'))` y armar
-   `"data:image/jpeg;base64,<...>"` (usá `image/png` si es PNG). Optimizá/reducí
-   la imagen si viene muy pesada — el archivo ya es enorme.
-3. Insertá cada data URI en **`FOTOS`** con su clave. Para 1 foto: clave =
-   nombre del producto. Para varias: claves `"Nombre"`, `"Nombre_2"`, … y además
-   agregá la entrada en **`FOTOS_MULTI`**: `"Nombre": ["Nombre","Nombre_2",...]`.
+2. Guardá cada imagen como archivo en **`fotos/<slug>.jpg`**. El slug sale de la
+   clave: ASCII, minúsculas, guiones, sin acentos, solo `[a-z0-9-]` (ej.
+   `"Mesa country - pata nórdica_2"` → `mesa-country-pata-nordica-2.jpg`). Si el
+   slug ya existe, agregá `-2`, `-3`. **Redimensionala a un máximo de ~1200 px**
+   en el lado mayor si viene más grande (JPEG calidad ~82, idealmente < 200 KB).
+   Sin instalar nada, con PowerShell + System.Drawing:
+   ```powershell
+   Add-Type -AssemblyName System.Drawing
+   $src = [Drawing.Image]::FromFile('C:\ruta\foto.jpg'); $max = 1200
+   $r = [Math]::Min(1, $max / [Math]::Max($src.Width, $src.Height))
+   $bmp = New-Object Drawing.Bitmap ([int]($src.Width*$r)), ([int]($src.Height*$r))
+   $g = [Drawing.Graphics]::FromImage($bmp); $g.InterpolationMode = 'HighQualityBicubic'
+   $g.DrawImage($src, 0, 0, $bmp.Width, $bmp.Height)
+   $enc = [Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | ? { $_.MimeType -eq 'image/jpeg' }
+   $p = New-Object Drawing.Imaging.EncoderParameters 1
+   $p.Param[0] = New-Object Drawing.Imaging.EncoderParameter ([Drawing.Imaging.Encoder]::Quality, [long]82)
+   $bmp.Save('C:\...\fotos\<slug>.jpg', $enc, $p); $g.Dispose(); $bmp.Dispose(); $src.Dispose()
+   ```
+   Ojo con la orientación EXIF de las fotos de celular: revisá que no quede rotada.
+3. En **`FOTOS`** agregá la clave con la **ruta** (no base64):
+   `"Nombre": "fotos/nombre.jpg"`. Para 1 foto: clave = nombre del producto.
+   Para varias: claves `"Nombre"`, `"Nombre_2"`, … (archivos `nombre.jpg`,
+   `nombre-2.jpg`, …) y además agregá la entrada en **`FOTOS_MULTI`**:
+   `"Nombre": ["Nombre","Nombre_2",...]`.
 4. Agregá la tupla `[nombre, medida, precio]` al array de su categoría en
    **`PRODUCTOS`**, en la posición pedida (por defecto, al final de la categoría).
 5. No hace falta tocar el render ni `initCarousels()` ni el deep linking: todo se
@@ -110,7 +141,10 @@ Los números de línea son aproximados; confirmá siempre con Grep antes de edit
    el nombre del producto, así que **el nombre en `PRODUCTOS`, en `FOTOS` y en
    `FOTOS_MULTI` tiene que ser idéntico** (mismos acentos/codificación).
 6. Verificá: la clave de `FOTOS` matchea el nombre; si es multi, todas las claves
-   del array existen en `FOTOS`; la categoría existe en `PRODUCTOS`.
+   del array existen en `FOTOS`; la categoría existe en `PRODUCTOS`; **cada ruta
+   de `FOTOS` existe en disco** dentro de `fotos/`; y no quedó ninguna
+   `data:image/jpeg` en `index.html`. Probá servido por HTTP (no `file://`).
+   Al hacer commit, incluí los archivos nuevos de `fotos/`.
 
 ## Tarea 2 — Actualizar precios desde un Excel
 
@@ -134,9 +168,14 @@ Los números de línea son aproximados; confirmá siempre con Grep antes de edit
 - Antes de tocar nada, ubicá con Grep la sección exacta (CSS vs. render vs.
   lógica) y leé el contexto alrededor.
 - El CSS usa variables (`var(--accent)`, `var(--dark)`, `var(--sand)`,
-  `var(--white)`, `var(--muted)`, `var(--amber)`, …) y las fuentes
-  `'Playfair Display'` / `'Jost'` / `'Jost'`. Respetá la paleta y la tipografía
-  existentes salvo que pidan cambiarlas.
+  `var(--white)`, `var(--muted)`, `var(--amber)`, …) y las fuentes Montserrat
+  (títulos, nombres, precios, labels), Jost 300/400 (texto corrido) y Playfair
+  Display **solo** en el titular del hero y el logo. Un solo radio para botones
+  (pill, 999px) y uno para tarjetas (`var(--radius)`). Respetá la paleta y la
+  tipografía existentes salvo que pidan cambiarlas.
+- Imágenes: todas con `loading="lazy" decoding="async"`, salvo la 1a del hero
+  (`<link rel="preload" ... fetchpriority="high">` + `style` inline en
+  `#heroSlide0`). La 2a del hero se pide recién después del `load`.
 - El sitio es **mobile-first** y la barra de categorías es `sticky`. Probá que
   los cambios no rompan el scroll horizontal de `.cat-nav` ni el `z-index` del
   lightbox (`999`) y el botón flotante.
